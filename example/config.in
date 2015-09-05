@@ -1,0 +1,3 @@
+App config file
+app_host: {{ .host }}
+app_port: {{ .port }}

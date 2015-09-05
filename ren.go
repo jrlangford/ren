@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"text/template"
+	"path"
 )
 
 var debug = flag.Bool("debug", false, "Run ren in debug mode")
@@ -55,7 +56,7 @@ func main() {
 		}
 	}
 
-	err = templates.ExecuteTemplate(os.Stdout, "myFile.in", children)
+	err = templates.ExecuteTemplate(os.Stdout, path.Base(*templateFile), children)
 	check(err, "Could not execute template")
 
 }

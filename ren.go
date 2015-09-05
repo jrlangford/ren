@@ -4,14 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"github.com/jeffail/gabs"
-	"io/ioutil"
 	"os"
 	"path"
 	"text/template"
 )
 
 var debug = flag.Bool("debug", false, "Run ren in debug mode")
-var dataFile = flag.String("j", "", "Set the json input file")
+var jsonData = flag.String("j", "", "Set the json input string")
 var templateFile = flag.String("t", "", "Set the template input file")
 
 func check(e error, s string) {
@@ -24,8 +23,8 @@ func check(e error, s string) {
 func main() {
 	flag.Parse()
 
-	if *dataFile == "" {
-		fmt.Fprintf(os.Stderr, "Data file parameter missing, aborting\n")
+	if *jsonData == "" {
+		fmt.Fprintf(os.Stderr, "JSon data parameter missing, aborting\n")
 		os.Exit(1)
 	}
 
@@ -34,17 +33,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	jsonString, err := ioutil.ReadFile(*dataFile)
-	check(err, "Could not read file")
-
 	if *debug {
-		fmt.Fprintf(os.Stderr, "jsonString: \n%s\n", jsonString)
+		fmt.Fprintf(os.Stderr, "jsonData: \n%s\n", jsonData)
 	}
 
 	templates, err := template.ParseFiles(*templateFile)
 	check(err, "Could not parse template")
 
-	jsonParsed, err := gabs.ParseJSON(jsonString)
+	jsonParsed, err := gabs.ParseJSON([]byte(*jsonData))
 	check(err, "Could not parse json")
 
 	children, err := jsonParsed.ChildrenMap()

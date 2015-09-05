@@ -17,10 +17,10 @@ $ go install
 
 ##Usage
 
-REN takes a json file and a template as inputs and outputs the processed string to stdout.
+REN takes a json string and a template file as inputs and outputs the processed string to stdout.
 
 ```
-$ ren -j <input_json_file> -t <input_template_file>
+$ ren -j <input_json_string> -t <input_template_file>
 
 ```
 ###Example
@@ -42,7 +42,7 @@ app_port: {{ .port }}
 
 Rendering:
 ```
-$ ren -j example/data.json -t example/config.in
+$ ren -j "$(cat example/data.json)" -t example/config.in
 ```
 
 Output:

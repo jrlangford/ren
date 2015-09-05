@@ -6,8 +6,8 @@ import (
 	"github.com/jeffail/gabs"
 	"io/ioutil"
 	"os"
-	"text/template"
 	"path"
+	"text/template"
 )
 
 var debug = flag.Bool("debug", false, "Run ren in debug mode")
@@ -56,7 +56,13 @@ func main() {
 		}
 	}
 
-	err = templates.ExecuteTemplate(os.Stdout, path.Base(*templateFile), children)
+	var typedMap map[string]string
+	typedMap = make(map[string]string)
+	for key, child := range children {
+		typedMap[key] = fmt.Sprintf("%v", child.Data())
+	}
+
+	err = templates.ExecuteTemplate(os.Stdout, path.Base(*templateFile), typedMap)
 	check(err, "Could not execute template")
 
 }

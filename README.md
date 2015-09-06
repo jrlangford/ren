@@ -14,7 +14,7 @@ $ go install
 
 ##Usage
 
-REN takes a json string and a template file as inputs and outputs the processed string to stdout.
+REN takes a string of comma separated values and a template file as inputs and prints the processed string to stdout.
 
 ```
 $ ren -c <input_csv_string> -t <input_template_file>

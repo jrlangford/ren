@@ -60,14 +60,18 @@ func main() {
 				fmt.Fprintf(os.Stderr, "%d:%s\n", index, entry)
 			}
 		}
-
+		
 		for _, entry := range record {
-			subStrings := strings.Split(entry, ":")
-			if len(subStrings) != 2 {
-				fmt.Fprintf(os.Stderr, "Unexpected record format: %s, Data: %v, aborting\n", record, subStrings)
+			substrings := strings.Split(entry, ":")
+			if len(substrings) != 2 {
+				fmt.Fprintf(os.Stderr, "Unexpected record format: %s, Data: %v, aborting\n", record, substrings)
 				os.Exit(1)
 			}
-			dataMap[subStrings[0]] = subStrings[1]
+			
+			key := strings.Trim(substrings[0], " ")
+			value := strings.Trim(substrings[1], " ")
+			
+			dataMap[key] = value
 		}
 	}
 

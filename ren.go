@@ -2,12 +2,13 @@ package main
 
 import (
 	"encoding/csv"
+	"errors"
 	"flag"
-	"io"
-	"strings"
 	"fmt"
+	"io"
 	"os"
 	"path"
+	"strings"
 	"text/template"
 )
 
@@ -15,11 +16,65 @@ var debug = flag.Bool("debug", false, "Run ren in debug mode")
 var inputData = flag.String("c", "", "Set the csv input string")
 var templateFile = flag.String("t", "", "Set the template input file")
 
-func check(e error, s string) {
-	if e != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s -> %s\n", s, e)
-		os.Exit(1)
+func printErr(e error, s string) {
+	fmt.Fprintf(os.Stderr, "Error: %s -> %s\n", s, e)
+}
+
+func csvKeyValuesToMap(s string, dataMap map[string]string) (err error) {
+	csvParsed := csv.NewReader(strings.NewReader(s))
+	for {
+		record, err := csvParsed.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			printErr(err, "CSV Parsing")
+			return err
+		}
+		if *debug {
+			for index, entry := range record {
+				fmt.Fprintf(os.Stderr, "%d:%s\n", index, entry)
+			}
+		}
+
+		for _, entry := range record {
+			substrings := strings.Split(entry, ":")
+			if len(substrings) != 2 {
+				err = errors.New(fmt.Sprintf("Unexpected record format: %s, Data: %v", record, substrings))
+				printErr(err, "CSV Format")
+				return err
+			}
+
+			key := strings.Trim(substrings[0], " ")
+			value := strings.Trim(substrings[1], " ")
+
+			dataMap[key] = value
+		}
 	}
+	return err
+}
+
+func renderTemplate(tmplFilename, inputTuples string, wr io.Writer) (err error) {
+	tmpl, err := template.ParseFiles(tmplFilename)
+	if err != nil {
+		printErr(err, "Could not parse template")
+		return err
+	}
+
+	var dataMap map[string]string
+	dataMap = make(map[string]string)
+
+	err = csvKeyValuesToMap(inputTuples, dataMap)
+	if err != nil {
+		return err
+	}
+
+	err = tmpl.ExecuteTemplate(wr, path.Base(tmplFilename), dataMap)
+	if err != nil {
+		printErr(err, "Could not execute template")
+		return err
+	}
+	return err
 }
 
 func main() {
@@ -39,43 +94,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Input string: \n%s\n", *inputData)
 	}
 
-	tmpl, err := template.ParseFiles(*templateFile)
-	check(err, "Could not parse template")
-
-	csvParsed := csv.NewReader(strings.NewReader(*inputData))
-
-	var dataMap map[string]string
-	dataMap = make(map[string]string)
-
-	for {
-		record, err := csvParsed.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			check(err, "CSV Parsing")
-		}
-		if *debug {
-			for index, entry := range record {
-				fmt.Fprintf(os.Stderr, "%d:%s\n", index, entry)
-			}
-		}
-		
-		for _, entry := range record {
-			substrings := strings.Split(entry, ":")
-			if len(substrings) != 2 {
-				fmt.Fprintf(os.Stderr, "Unexpected record format: %s, Data: %v, aborting\n", record, substrings)
-				os.Exit(1)
-			}
-			
-			key := strings.Trim(substrings[0], " ")
-			value := strings.Trim(substrings[1], " ")
-			
-			dataMap[key] = value
-		}
+	err := renderTemplate(*templateFile, *inputData, os.Stdout)
+	if err != nil {
+		os.Exit(1)
 	}
-
-	err = tmpl.ExecuteTemplate(os.Stdout, path.Base(*templateFile), dataMap)
-	check(err, "Could not execute template")
-
 }

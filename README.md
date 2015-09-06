@@ -1,12 +1,9 @@
 #REN
 
-A file renderer written in go based on the following libraries:
-* ["text/template"](http://golang.org/pkg/text/template/)
-* ["jeffail/gabs"](https://github.com/jeffail/gabs)
+A file renderer written in go based on the ["text/template library"](http://golang.org/pkg/text/template/)
 
 ##Build
 ```
-$ go get
 $ go build
 ```
 
@@ -20,20 +17,12 @@ $ go install
 REN takes a json string and a template file as inputs and outputs the processed string to stdout.
 
 ```
-$ ren -j <input_json_string> -t <input_template_file>
+$ ren -c <input_csv_string> -t <input_template_file>
 
 ```
 ###Example
 
-input_json_file (example/data.json):
-```
-{
-	"host": "localhost",
-	"port": 8080
-}
-```
-
-input_template_file (example/config.in):
+input_template (test_data/config.in):
 ```
 App config file
 app_host: {{ .host }}
@@ -42,7 +31,7 @@ app_port: {{ .port }}
 
 Rendering:
 ```
-$ ren -j "$(cat example/data.json)" -t example/config.in
+$ ren -c "host:localhost,port:8080" -t test_data/config_file
 ```
 
 Output:

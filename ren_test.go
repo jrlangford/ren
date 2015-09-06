@@ -22,8 +22,20 @@ func init() {
 	fmt.Println("Starting tests.\nError messages are expected as part of some successful tests.")
 }
 
-func TestValidKeyValueFormatIsMapped(t *testing.T) {
+func TestTupleIsMapped(t *testing.T) {
 	s := "host:localhost,port:8080"
+
+	var dataMap map[string]string
+	dataMap = make(map[string]string)
+
+	csvKeyValuesToMap(s, dataMap)
+
+	failOnStringMismatch("localhost", dataMap["host"], t)
+	failOnStringMismatch("8080", dataMap["port"], t)
+}
+
+func TestMultilineTuplesAreMapped(t *testing.T) {
+	s := "host:localhost\nport:8080"
 
 	var dataMap map[string]string
 	dataMap = make(map[string]string)

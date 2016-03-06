@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/csv"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -35,7 +34,7 @@ func csvKeyValuesToMap(s string, dataMap map[string]string) (err error) {
 		for _, entry := range record {
 			substrings := strings.Split(entry, ":")
 			if len(substrings) != 2 {
-				err = errors.New(fmt.Sprintf("Unexpected record format: %s, Data: %v", record, substrings))
+				err = fmt.Errorf("Unexpected record format: %s, Data: %v", record, substrings)
 				printErr(err, "CSV Format")
 				return err
 			}

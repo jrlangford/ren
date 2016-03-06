@@ -28,7 +28,10 @@ func TestTupleIsMapped(t *testing.T) {
 	var dataMap map[string]string
 	dataMap = make(map[string]string)
 
-	csvKeyValuesToMap(s, dataMap)
+	err := csvKeyValuesToMap(s, dataMap)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 
 	failOnStringMismatch("localhost", dataMap["host"], t)
 	failOnStringMismatch("8080", dataMap["port"], t)
@@ -40,7 +43,10 @@ func TestWhitespaceIsTrimmed(t *testing.T) {
 	var dataMap map[string]string
 	dataMap = make(map[string]string)
 
-	csvKeyValuesToMap(s, dataMap)
+	err := csvKeyValuesToMap(s, dataMap)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 
 	failOnStringMismatch("localhost", dataMap["host"], t)
 	failOnStringMismatch("8080", dataMap["port"], t)
@@ -52,7 +58,10 @@ func TestMultilineTuplesAreMapped(t *testing.T) {
 	var dataMap map[string]string
 	dataMap = make(map[string]string)
 
-	csvKeyValuesToMap(s, dataMap)
+	err := csvKeyValuesToMap(s, dataMap)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 
 	failOnStringMismatch("localhost", dataMap["host"], t)
 	failOnStringMismatch("8080", dataMap["port"], t)
@@ -82,7 +91,10 @@ app_host: localhost
 app_port: 8080
 `
 
-	renderTemplate(tmplFilename, s, &outputBytes)
+	err := renderTemplate(tmplFilename, s, &outputBytes)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 
 	failOnStringMismatch(expectedString, outputBytes.String(), t)
 

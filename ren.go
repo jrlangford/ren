@@ -31,11 +31,6 @@ func csvKeyValuesToMap(s string, dataMap map[string]string) (err error) {
 			printErr(err, "CSV Parsing")
 			return err
 		}
-		if *debug {
-			for index, entry := range record {
-				fmt.Fprintf(os.Stderr, "%d:%s\n", index, entry)
-			}
-		}
 
 		for _, entry := range record {
 			substrings := strings.Split(entry, ":")
@@ -49,6 +44,12 @@ func csvKeyValuesToMap(s string, dataMap map[string]string) (err error) {
 			value := strings.Trim(substrings[1], " ")
 
 			dataMap[key] = value
+		}
+
+		if *debug {
+			for key, value := range dataMap {
+				fmt.Fprintf(os.Stderr, "[%s]:%s\n", key, value)
+			}
 		}
 	}
 	return err

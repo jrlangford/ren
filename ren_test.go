@@ -34,6 +34,18 @@ func TestTupleIsMapped(t *testing.T) {
 	failOnStringMismatch("8080", dataMap["port"], t)
 }
 
+func TestWhitespaceIsTrimmed(t *testing.T) {
+	s := "     host:localhost,     port:      8080"
+
+	var dataMap map[string]string
+	dataMap = make(map[string]string)
+
+	csvKeyValuesToMap(s, dataMap)
+
+	failOnStringMismatch("localhost", dataMap["host"], t)
+	failOnStringMismatch("8080", dataMap["port"], t)
+}
+
 func TestMultilineTuplesAreMapped(t *testing.T) {
 	s := "host:localhost\nport:8080"
 
